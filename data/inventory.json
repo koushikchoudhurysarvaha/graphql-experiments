@@ -1,0 +1,7 @@
+[
+    { "sellerId": 1, "productId": 4, "quantity": 14, "mrp": 140.00 },
+    { "sellerId": 1, "productId": 2, "quantity": 12, "mrp": 120.00 },
+    { "sellerId": 2, "productId": 3, "quantity": 23, "mrp": 230.00 },
+    { "sellerId": 1, "productId": 1, "quantity": 11, "mrp": 110.00 },
+    { "sellerId": 2, "productId": 1, "quantity": 21, "mrp": 210.00 }
+]
