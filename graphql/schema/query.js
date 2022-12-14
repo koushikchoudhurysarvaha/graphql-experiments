@@ -23,7 +23,11 @@ const RootQuery = new GraphQLObjectType({
         },
         inventory: {
             type: new GraphQLList(Inventory),
-            args: { sellerId: { type: GraphQLInt } },
+            args: { 
+                sellerId: { type: GraphQLInt }, 
+                limit: { type: GraphQLInt },
+                offset: { type: GraphQLInt }
+            },
             resolve: getInventoryBySellerId
         },
         sellerInventory: {

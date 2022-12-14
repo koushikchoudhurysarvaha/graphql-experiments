@@ -1,10 +1,12 @@
 const express = require("express");
 const { graphqlHTTP } = require("express-graphql");
 
+const { init: initMySQLDB } = require("./mysql");
 const {schema} = require("./graphql/schema");
 
 const app = express();
 const PORT = process.env.PORT || 3005;
+initMySQLDB();
 
 // NOTE: This is a middleware, not a route.
 //       This will create a GET route.
