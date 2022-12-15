@@ -1,18 +1,20 @@
 const express = require("express");
-const { graphqlHTTP } = require("express-graphql");
+const { ApolloServer } = require("apollo-server-express");
 
 const { init: initMySQLDB } = require("./mysql");
-const {schema} = require("./graphql/schema");
+const {types: { typeDefs }} = require("./graphql/schema");
+const {resolvers} = require("./graphql/resolver");
 
 const app = express();
 const PORT = process.env.PORT || 3005;
 initMySQLDB();
 
-// NOTE: This is a middleware, not a route.
-//       This will create a GET route.
-app.use("/graphql", graphqlHTTP({
-    schema
-}));
-
-
-app.listen(PORT, () => console.log("Server Running @", PORT));
+(async function _(){
+    const GraphQLServer = new ApolloServer({ 
+        typeDefs, 
+        resolvers
+    });
+    await GraphQLServer.start();
+    GraphQLServer.applyMiddleware({ app });
+    app.listen({ port: PORT }, () => console.log("Server Running @", PORT));
+})();

@@ -1,4 +1,3 @@
 module.exports = { 
-    types: require("./types"),
-    schema: require("./query")
+    types: require("./types")
 }

@@ -1,13 +1,22 @@
-const { _sellers, products, _inventory } = require("../../data");
 const { query } = require("../../mysql");
 
-const getSellers = async (parent, args) => {
-    parent && console.log("getSellers Parent: ", parent);
+const sellers = async (parent, args) => {
+    parent && console.log("sellers Parent: ", parent);
     const [sellers] = await query(`
         SELECT * FROM seller
         ${args.id && `WHERE id=${args.id}` || ''}
     `);
     return sellers;
+}
+
+const seller = async (parent, args) => {
+    parent && console.log("seller Parent: ", parent);
+    const [[data]] = await query(`
+        SELECT * FROM seller
+        ${parent.id && `WHERE id=${parent.id}` || ''}
+        LIMIT 1
+    `);
+    return data;
 }
 
 const findSeller = async (parent, args) => {
@@ -33,17 +42,25 @@ const findProduct = async (parent, args) => {
     return product;
 }
 
-const getInventoryBySellerId = async (parent, args) => {
-    const { limit, offset } = args;
+const inventory = async (parent, args) => {
+    const { limit, offset, id } = args;
     console.log("L", limit)
     console.log("O", offset, !!offset)
-    const [inventory] = await query(`
-        SELECT * FROM inventory
-        WHERE sellerId=${args.sellerId}
+    const [data] = await query(`
+        SELECT 
+            i.*,
+            JSON_OBJECT(
+                'id', s.id,
+                'name', s.name,
+                'pincode', s.pincode
+            ) AS seller
+        FROM inventory i
+        INNER JOIN seller s ON s.id=i.sellerId
+        ${id && `WHERE s.id=${id}` || ''}
         ${limit && `LIMIT ${limit}` || ''}
         ${offset && `OFFSET ${offset}` || ''}
     `);
-    return inventory;
+    return data;
 }
 
 const getSellerInventory = async (parent, args) => {
@@ -67,11 +84,18 @@ const getProductInventory = async (parent, args) => {
 }
 
 module.exports = {
-    getSellers,
+    sellers,
     findProductById,
-    getInventoryBySellerId,
+    //getInventoryBySellerId,
     getSellerInventory,
     getProductInventory,
     findSeller,
-    findProduct
+    findProduct,
+    resolvers: {
+        Query: {
+            seller,
+            sellers,
+            inventory
+        }
+    }
 }
