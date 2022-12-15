@@ -12,7 +12,14 @@ initMySQLDB();
 (async function _(){
     const GraphQLServer = new ApolloServer({ 
         typeDefs, 
-        resolvers
+        resolvers,
+        context: ({ req, res }) => {
+            if (!req.headers['authorization']) {
+                res.sendStatus(401);
+                return;
+            }
+            return { res, user: { id: 1, name: "Japanese Fighter Machine" } };
+        }
     });
     await GraphQLServer.start();
     GraphQLServer.applyMiddleware({ app });

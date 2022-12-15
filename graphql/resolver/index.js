@@ -42,7 +42,11 @@ const findProduct = async (parent, args) => {
     return product;
 }
 
-const inventory = async (parent, args) => {
+const inventory = async (parent, args, context) => {
+    if (context.user.id !== 2) {
+        context.res.sendStatus(403);
+        return;
+    }
     const { limit, offset, id } = args;
     console.log("L", limit)
     console.log("O", offset, !!offset)
