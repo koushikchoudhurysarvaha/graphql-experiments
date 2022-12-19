@@ -1,5 +1,7 @@
 const express = require("express");
-const { ApolloServer } = require("apollo-server-express");
+const { ApolloServer, gql } = require("apollo-server-express");
+const { AuthenticationError } = require("apollo-server-errors");
+const { typeDefs: scalarTypeDefs, resolvers: scalarResolvers } = require('graphql-scalars');
 
 const { init: initMySQLDB } = require("./mysql");
 const {types: { typeDefs }} = require("./graphql/schema");
@@ -11,14 +13,22 @@ initMySQLDB();
 
 (async function _(){
     const GraphQLServer = new ApolloServer({ 
-        typeDefs, 
-        resolvers,
+        typeDefs: [ typeDefs, ...scalarTypeDefs ],
+        resolvers: { ...resolvers, ...scalarResolvers },
         context: ({ req, res }) => {
-            if (!req.headers['authorization']) {
-                res.sendStatus(401);
-                return;
+            console.log(req.body.query);
+            const queryDef = gql`
+                ${req.body.query}
+            `;
+            const isAuthQuery = queryDef
+                                .definitions[0]
+                                .selectionSet
+                                .selections[0]
+                                .name.value === 'authenticate';
+            if (!(isAuthQuery || req.headers['authorization'])) {
+                throw new AuthenticationError('Error 1');
             }
-            return { res, user: { id: 1, name: "Japanese Fighter Machine" } };
+            return { res, user: { id: 2, name: "Japanese Fighter Machine" } };
         }
     });
     await GraphQLServer.start();

@@ -1,4 +1,5 @@
 const { query } = require("../../mysql");
+const { AuthenticationError } = require("apollo-server-errors");
 
 const sellers = async (parent, args) => {
     parent && console.log("sellers Parent: ", parent);
@@ -43,9 +44,8 @@ const findProduct = async (parent, args) => {
 }
 
 const inventory = async (parent, args, context) => {
-    if (context.user.id !== 2) {
-        context.res.sendStatus(403);
-        return;
+    if (context.user.id !== 1) {
+        throw new AuthenticationError('Error 2');
     }
     const { limit, offset, id } = args;
     console.log("L", limit)
@@ -87,6 +87,16 @@ const getProductInventory = async (parent, args) => {
     return productInventory;
 }
 
+const authenticate = async (parent, args) => {
+    const { email, password } = args;
+    if (email === '1' && password === '2') {
+        return {
+            token: "123",
+            timestamp: new Date()
+        }
+    }
+}
+
 module.exports = {
     sellers,
     findProductById,
@@ -99,7 +109,8 @@ module.exports = {
         Query: {
             seller,
             sellers,
-            inventory
+            inventory,
+            authenticate
         }
     }
 }

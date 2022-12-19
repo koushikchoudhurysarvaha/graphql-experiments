@@ -17,11 +17,17 @@ const typeDefs = gql`
         seller: Seller!
     }
 
+    type Authentication {
+        token: String!,
+        timestamp: DateTime!
+    }
+
     #Query
     type Query {
         sellers: [Seller!]
         seller: Seller!
         inventory(id: Int, offset: Int, limit: Int): [Inventory!]
+        authenticate(email: String!, password: String!): Authentication!
     }
 `;
 
