@@ -1,6 +1,8 @@
 const { gql } = require("apollo-server-express");
 
 const typeDefs = gql`
+
+    scalar FileUpload
     
     # Types
     type Seller {
@@ -22,12 +24,22 @@ const typeDefs = gql`
         timestamp: DateTime!
     }
 
-    #Query
+    type UploadResult {
+        status: Int!
+    }
+
+    #Queries
     type Query {
         sellers: [Seller!]
         seller: Seller!
         inventory(id: Int, offset: Int, limit: Int): [Inventory!]
         authenticate(email: String!, password: String!): Authentication!
+    }
+
+    #Mutations
+    type Mutation {
+        uploadSingleFile(file: FileUpload!): UploadResult!
+        testMutation(in: Int!): String
     }
 `;
 

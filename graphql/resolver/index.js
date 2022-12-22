@@ -1,5 +1,6 @@
 const { query } = require("../../mysql");
 const { AuthenticationError } = require("apollo-server-errors");
+const { createWriteStream } = require("fs");
 
 const sellers = async (parent, args) => {
     parent && console.log("sellers Parent: ", parent);
@@ -97,6 +98,27 @@ const authenticate = async (parent, args) => {
     }
 }
 
+const uploadSingleFile = async (parent, args, context) => {
+    //console.log("Parent: ", parent);
+    //console.log("Args: ", args);
+    //console.log("Context: ", context);
+    console.log("Args: ", args);
+    const { file: { file: { createReadStream, filename } } } = args;
+    //console.log(file);
+    await new Promise((R, J) => {
+        createReadStream()
+            .pipe(createWriteStream('uploads/'+filename))
+            .on('finish', () => R())
+            .on('error', () => J());
+    });
+    return { status: 1 };
+}
+
+const testMutation = async(parent, args, context) => {
+    console.log(context.user);
+    return 'Mutation Works';
+};
+
 module.exports = {
     sellers,
     findProductById,
@@ -111,6 +133,10 @@ module.exports = {
             sellers,
             inventory,
             authenticate
+        },
+        Mutation: {
+            uploadSingleFile,
+            testMutation
         }
     }
 }
