@@ -1,6 +1,7 @@
 const { query } = require("../../mysql");
 const { AuthenticationError } = require("apollo-server-errors");
 const { createWriteStream } = require("fs");
+const { getDB } = require("../../firestore");
 
 const sellers = async (parent, args) => {
     parent && console.log("sellers Parent: ", parent);
@@ -119,6 +120,19 @@ const testMutation = async(parent, args, context) => {
     return 'Mutation Works';
 };
 
+const schools = async (parent, args) => {
+    const snapshot = await getDB().collection('schools').get();
+    const arr = [];
+    snapshot.forEach((doc) => { arr.push(doc.data()) });
+    return arr;
+}
+
+const editSchoolName = async (parent, args) => {
+    console.log(args);
+    await getDB().collection('schools').doc(args.id).update({ name: args.name });
+    return { status: 1 }
+}
+
 module.exports = {
     sellers,
     findProductById,
@@ -132,11 +146,13 @@ module.exports = {
             seller,
             sellers,
             inventory,
-            authenticate
+            authenticate,
+            schools
         },
         Mutation: {
             uploadSingleFile,
-            testMutation
+            testMutation,
+            editSchoolName
         }
     }
 }

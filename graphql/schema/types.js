@@ -19,6 +19,10 @@ const typeDefs = gql`
         seller: Seller!
     }
 
+    type School {
+        name: String
+    }
+
     type Authentication {
         token: String!,
         timestamp: DateTime!
@@ -34,12 +38,14 @@ const typeDefs = gql`
         seller: Seller!
         inventory(id: Int, offset: Int, limit: Int): [Inventory!]
         authenticate(email: String!, password: String!): Authentication!
+        schools: [School]
     }
 
     #Mutations
     type Mutation {
         uploadSingleFile(file: FileUpload!): UploadResult!
         testMutation(in: Int!): String
+        editSchoolName(id: String!, name: String!): UploadResult
     }
 `;
 

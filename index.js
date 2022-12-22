@@ -4,15 +4,15 @@ const { AuthenticationError } = require("apollo-server-errors");
 const { typeDefs: scalarTypeDefs, resolvers: scalarResolvers } = require('graphql-scalars');
 const { graphqlUploadExpress } = require('graphql-upload');
 
-
-
 const { init: initMySQLDB } = require("./mysql");
+const { init: initFirestore } = require("./firestore");
 const {types: { typeDefs }} = require("./graphql/schema");
 const {resolvers} = require("./graphql/resolver");
 
 const app = express();
 const PORT = process.env.PORT || 3005;
 initMySQLDB();
+initFirestore();
 
 (async function _(){
     const GraphQLServer = new ApolloServer({ 
